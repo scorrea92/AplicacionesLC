@@ -1,5 +1,6 @@
 # AplicacionesLC
 Practicas desarrolladas para la asignatura Aplicaciones de la Lingüística Computacional del Master IARFID de la UPV.
+
 **Practica1:**
 * Objetivo: Manipulación de cadenas y uso de expresiones regulares para construir un
 tokenizador.
