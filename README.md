@@ -5,7 +5,7 @@ Practicas desarrolladas para la asignatura Aplicaciones de la Lingüística Comp
 * Objetivo: Manipulación de cadenas y uso de expresiones regulares para construir un
 tokenizador.
 
-**Practica2(Sentiment Analysis):**
+**Practica2 (Sentiment Analysis):**
 * Construir un sistema de SA para el español, usando tweets.
 
 ## Built With
