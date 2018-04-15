@@ -1,9 +1,9 @@
-
+# -*- coding: utf-8 -*-
 import csv
 import pandas as pd
 import xml.etree.ElementTree as ET
 from nltk.tokenize import TweetTokenizer
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import preprocessing
 
 def xml2df(path):
@@ -46,21 +46,6 @@ def tcv2array(path):
                     a.append(row)
     return a
 
-#"""Tweet Tokenize"""
-#tknzr = TweetTokenizer()
-#path = 'data/TASS2017_T1_training.xml'
-#
-#from bs4 import BeautifulSoup
-#infile = open(path,"r")
-#contents = infile.read()
-#soup = BeautifulSoup(contents,'xml')
-#content = soup.find_all('content')
-#
-#train=[]
-#for c in content:
-#    train.append(' '.join(tknzr.tokenize(c.getText())))
-#
-
 """Read Data to Data Frame"""
 path = 'data/TASS2017_T1_training.xml'
 train_x, train_y = xml2df(path)
@@ -86,7 +71,8 @@ train_x = cv.fit_transform(train_x)
 dev_x = cv.transform(dev_x)
 
 
-"""SVM"""
+"""Linear SVM"""
+print("""Linear SVM""")
 from sklearn.svm import LinearSVC
 from sklearn.metrics import confusion_matrix, classification_report
 
@@ -103,8 +89,114 @@ print(classification_report(dev_y, y_pred))
 
 
 
+from sklearn.model_selection import GridSearchCV
+
+param_grid = {'C': [1, 10, 100, 1000]}
+
+clf = GridSearchCV(LinearSVC(), param_grid, scoring='f1_micro')
+clf = clf.fit(train_x, train_y)
+
+print("Best estimator found by grid search: {}".format(clf.best_estimator_))
+print("Tuned Logistic Regression Accuracy: {}".format(clf.best_score_))
+
+y_pred = clf.predict(dev_x)
+print("______________Validation Confusion Matrix______________")
+print(confusion_matrix(dev_y, y_pred))
+print("")
+print("___________________Validation Report___________________")
+print(classification_report(dev_y, y_pred))
 
 
+
+
+"""SVM"""
+print("""SVM""")
+from sklearn import svm
+# Set the parameters by cross-validation
+parameters = [{'kernel': ['rbf'],
+               'gamma': [1e-4, 1e-3, 0.01, 0.1, 0.2, 0.5],
+                'C': [1, 10, 100, 1000]}]
+
+print("# Tuning hyper-parameters")
+
+clf = GridSearchCV(svm.SVC(decision_function_shape='ovr'), parameters, scoring='f1_micro')
+clf.fit(train_x, train_y)
+
+print("Best estimator found by grid search: {}".format(clf.best_estimator_))
+print("Tuned Logistic Regression Accuracy: {}".format(clf.best_score_))
+
+y_pred = clf.predict(dev_x)
+print("______________Validation Confusion Matrix______________")
+print(confusion_matrix(dev_y, y_pred))
+print("")
+print("___________________Validation Report___________________")
+print(classification_report(dev_y, y_pred))
+
+
+
+
+"""DecisionTreeClassifier"""
+print("""DecisionTreeClassifier""")
+from sklearn import tree
+
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(train_x, train_y)
+
+y_pred = clf.predict(dev_x)
+print("______________Validation Confusion Matrix______________")
+print(confusion_matrix(dev_y, y_pred))
+print("")
+print("___________________Validation Report___________________")
+print(classification_report(dev_y, y_pred))
+
+
+
+"""Naive Bayes Gaussian"""
+print("""Naive Bayes Gaussian""")
+from sklearn.naive_bayes import GaussianNB
+gnb = GaussianNB()
+
+gnb = gnb.fit(train_x.toarray(), train_y)
+
+y_pred = gnb.predict(dev_x.toarray())
+print("______________Validation Confusion Matrix______________")
+print(confusion_matrix(dev_y, y_pred))
+print("")
+print("___________________Validation Report___________________")
+print(classification_report(dev_y, y_pred))
+
+
+
+"""KNeighbors"""
+print("""KNeighbors""")
+from sklearn.neighbors import KNeighborsClassifier
+neigh = KNeighborsClassifier(n_neighbors=10)
+
+neigh = neigh.fit(train_x.toarray(), train_y)
+
+y_pred = neigh.predict(dev_x.toarray())
+print("______________Validation Confusion Matrix______________")
+print(confusion_matrix(dev_y, y_pred))
+print("")
+print("___________________Validation Report___________________")
+print(classification_report(dev_y, y_pred))
+
+parameters = {'n_neighbors': [10, 500, 100, 150, 200, 250]}
+
+print("# Tuning hyper-parameters")
+
+clf = GridSearchCV(KNeighborsClassifier(), parameters, scoring='f1_micro')
+clf.fit(train_x, train_y)
+
+print("Best estimator found by grid search: {}".format(clf.best_estimator_))
+print("Tuned Logistic Regression Accuracy: {}".format(clf.best_score_))
+
+y_pred = clf.predict(dev_x.toarray())
+print("______________Validation Confusion Matrix______________")
+print(confusion_matrix(dev_y, y_pred))
+print("")
+print("___________________Validation Report___________________")
+print(classification_report(dev_y, y_pred))
 
 
 
