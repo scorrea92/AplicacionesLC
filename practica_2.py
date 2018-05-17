@@ -34,7 +34,7 @@ def xml2df(path):
     for content in df['content']:
         contents.append(' '.join(tknzr.tokenize(content)))
     
-    return contents,  df['polarity']
+    return contents,  df['polarity'], df
 
 def tcv2array(path):
     """Read tab separated values, # is for comments and dont be load it"""
@@ -49,10 +49,10 @@ def tcv2array(path):
 
 """Read Data to Data Frame"""
 path = 'data/TASS2017_T1_training.xml'
-train_x, train_y = xml2df(path)
+train_x, train_y, _ = xml2df(path)
 
 path1 = 'data/TASS2017_T1_development.xml'
-dev_x, dev_y = xml2df(path1)
+dev_x, dev_y, _ = xml2df(path1)
 
 
 """Transform data for model"""
@@ -73,6 +73,7 @@ print("""Linear SVM""")
 from sklearn.svm import LinearSVC
 from sklearn.metrics import confusion_matrix, classification_report
 
+
 svm = LinearSVC()
 svm.fit(train_x, train_y)  
 
@@ -84,13 +85,17 @@ print("")
 print("___________________Validation Report___________________")
 print(classification_report(dev_y, y_pred))
 
+from sklearn.metrics import f1_score
+print(f1_score(dev_y, svm.predict(dev_x), average='micro'))
+print(f1_score(dev_y, svm.predict(dev_x), average='macro'))
+print(f1_score(dev_y, svm.predict(dev_x), average='weighted'))
 
 """Final Model"""
 svm = LinearSVC()
 svm.fit(x, y)
 
 path2 = 'data/TASS2017_T1_test.xml'
-test, _ = xml2df(path2)
+test, _, ids = xml2df(path2)
 test = cv.transform(test)
 
 y_pred = svm.predict(test)
@@ -104,8 +109,8 @@ f.close()
 
 y_pred  = le.inverse_transform(y_pred)
 y_pred_text = ""
-for i in y_pred:
-    y_pred_text += i + "\n"
+for index, i in enumerate(y_pred):
+    y_pred_text += ids['tweetid'][index]+"    "+i + "\n"
     
 f= open("Sebastian_Correa_Linear_SVM_Cat.txt","w+")
 f.write(y_pred_text)
