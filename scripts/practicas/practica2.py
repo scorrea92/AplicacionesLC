@@ -7,6 +7,13 @@ from nltk.tokenize import TweetTokenizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import preprocessing
 
+from sklearn.svm import LinearSVC
+from sklearn.metrics import (
+    f1_score,
+    confusion_matrix,
+    classification_report
+)
+
 def xml2df(path):
     """Function for transform xml dataset to pandas data frame con tweet tok"""
     XMLdata = open(path).read()
@@ -70,10 +77,6 @@ x = cv.transform(x)
 
 """Linear SVM"""
 print("""Linear SVM""")
-from sklearn.svm import LinearSVC
-from sklearn.metrics import confusion_matrix, classification_report
-
-
 svm = LinearSVC()
 svm.fit(train_x, train_y)  
 
@@ -85,7 +88,7 @@ print("")
 print("___________________Validation Report___________________")
 print(classification_report(dev_y, y_pred))
 
-from sklearn.metrics import f1_score
+
 print(f1_score(dev_y, svm.predict(dev_x), average='micro'))
 print(f1_score(dev_y, svm.predict(dev_x), average='macro'))
 print(f1_score(dev_y, svm.predict(dev_x), average='weighted'))
@@ -103,7 +106,7 @@ y_pred_text = ""
 for i in y_pred:
     y_pred_text += str(i) + "\n"
     
-f= open("Sebastian_Correa_Linear_SVM_Num.txt","w+")
+f= open("data/Sebastian_Correa_Linear_SVM_Num.txt","w+")
 f.write(y_pred_text)
 f.close()
 
@@ -112,6 +115,6 @@ y_pred_text = ""
 for index, i in enumerate(y_pred):
     y_pred_text += ids['tweetid'][index]+"    "+i + "\n"
     
-f= open("Sebastian_Correa_Linear_SVM_Cat.txt","w+")
+f= open("data/Sebastian_Correa_Linear_SVM_Cat.txt","w+")
 f.write(y_pred_text)
 f.close()

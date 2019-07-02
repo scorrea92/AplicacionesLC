@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
-with open('entrada_tokenizador.txt','r',encoding='utf8') as f:
+with open('data/entrada_tokenizador.txt','r',encoding='utf8') as f:
     text = f.read()
 
 #( ). ,‘“?¿!¡ ...; :
@@ -26,6 +26,6 @@ for i in fiiter:
             out = out + i.group(j) + "\n"
 print(out)
 
-f= open("salida_tokenizador_P1.txt","w+")
+f= open("output/salida_tokenizador_P1.txt","w+")
 f.write(out)
 f.close()
